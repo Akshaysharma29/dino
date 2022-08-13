@@ -126,6 +126,8 @@ def get_args_parser():
     parser.add_argument("--dist_url", default="env://", type=str, help="""url used to set up
         distributed training; see https://pytorch.org/docs/stable/distributed.html""")
     parser.add_argument("--local_rank", default=0, type=int, help="Please ignore and do not set this argument.")
+    parser.add_argument("--pretrained", default=False, type=utils.bool_flag, help="this is only for vits to load from pretrained")
+    parser.add_argument("--load_from_chkpoint", default=False, type=utils.bool_flag, help="this is only for vits load from checkpoint")
     return parser
 
 
@@ -159,24 +161,23 @@ def train_dino(args):
     args.arch = args.arch.replace("deit", "vit")
     # if the network is a Vision Transformer (i.e. vit_tiny, vit_small, vit_base)
     if args.arch in vits.__dict__.keys():
-        tmp = torch.hub.load('facebookresearch/dino:main', 'dino_vits16')
-
         
         student = vits.__dict__[args.arch](
             patch_size=args.patch_size,
             drop_path_rate=args.drop_path_rate,  # stochastic depth
         )
-        print('loading pretrained weights in student')
-        student.load_state_dict(
-            tmp.state_dict(),
-        )
-        
         teacher = vits.__dict__[args.arch](patch_size=args.patch_size)
-        print('loading pretrained weights in teacher')
-        teacher.load_state_dict(
-            tmp.state_dict(),
-        )
         
+        if args.pretrained:
+            tmp = torch.hub.load('facebookresearch/dino:main', 'dino_vits16')
+            print('loading pretrained weights in student')
+            student.load_state_dict(
+                tmp.state_dict(),
+            )
+            print('loading pretrained weights in teacher')
+            teacher.load_state_dict(
+                tmp.state_dict(),
+            )
         
         embed_dim = student.embed_dim
     # if the network is a XCiT
