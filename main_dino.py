@@ -166,11 +166,13 @@ def train_dino(args):
             patch_size=args.patch_size,
             drop_path_rate=args.drop_path_rate,  # stochastic depth
         )
+        print('loading pretrained weights in student')
         student.load_state_dict(
             tmp.state_dict(),
         )
         
         teacher = vits.__dict__[args.arch](patch_size=args.patch_size)
+        print('loading pretrained weights in teacher')
         teacher.load_state_dict(
             tmp.state_dict(),
         )
