@@ -159,11 +159,23 @@ def train_dino(args):
     args.arch = args.arch.replace("deit", "vit")
     # if the network is a Vision Transformer (i.e. vit_tiny, vit_small, vit_base)
     if args.arch in vits.__dict__.keys():
+        tmp = torch.hub.load('facebookresearch/dino:main', 'dino_vits16')
+
+        
         student = vits.__dict__[args.arch](
             patch_size=args.patch_size,
             drop_path_rate=args.drop_path_rate,  # stochastic depth
         )
+        student.load_state_dict(
+            tmp.state_dict(),
+        )
+        
         teacher = vits.__dict__[args.arch](patch_size=args.patch_size)
+        teacher.load_state_dict(
+            tmp.state_dict(),
+        )
+        
+        
         embed_dim = student.embed_dim
     # if the network is a XCiT
     elif args.arch in torch.hub.list("facebookresearch/xcit:main"):
