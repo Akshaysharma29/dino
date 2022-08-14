@@ -127,7 +127,7 @@ def get_args_parser():
         distributed training; see https://pytorch.org/docs/stable/distributed.html""")
     parser.add_argument("--local_rank", default=0, type=int, help="Please ignore and do not set this argument.")
     parser.add_argument("--use_pretrained", default=False, type=utils.bool_flag, help="this is only for vits to load from pretrained")
-    parser.add_argument("--checkpoint_path", default=".", type=str, help="this is only for vits load from checkpoint")
+    parser.add_argument("--checkpoint_folder", default=".", type=str, help="this is only for vits load from checkpoint")
     return parser
 
 
@@ -268,8 +268,9 @@ def train_dino(args):
 
     # ============ optionally resume training ... ============
     to_restore = {"epoch": 0}
+    print(f'to_restore before loading chk:{to_restore}')
     utils.restart_from_checkpoint(
-        os.path.join(args.checkpoint_path, "checkpoint.pth"),
+        os.path.join(args.checkpoint_folder, "checkpoint.pth"),
         run_variables=to_restore,
         student=student,
         teacher=teacher,
@@ -277,7 +278,9 @@ def train_dino(args):
         fp16_scaler=fp16_scaler,
         dino_loss=dino_loss,
     )
+    print(f'to_restore after loading chk:{to_restore}')
     start_epoch = to_restore["epoch"]
+    
 
     start_time = time.time()
     print("Starting DINO training !")
