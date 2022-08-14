@@ -126,8 +126,8 @@ def get_args_parser():
     parser.add_argument("--dist_url", default="env://", type=str, help="""url used to set up
         distributed training; see https://pytorch.org/docs/stable/distributed.html""")
     parser.add_argument("--local_rank", default=0, type=int, help="Please ignore and do not set this argument.")
-    parser.add_argument("--pretrained", default=False, type=utils.bool_flag, help="this is only for vits to load from pretrained")
-    parser.add_argument("--load_from_chkpoint", default=False, type=utils.bool_flag, help="this is only for vits load from checkpoint")
+    parser.add_argument("--use_pretrained", default=False, type=utils.bool_flag, help="this is only for vits to load from pretrained")
+    parser.add_argument("--checkpoint_path", default=".", type=str, help="this is only for vits load from checkpoint")
     return parser
 
 
@@ -168,7 +168,7 @@ def train_dino(args):
         )
         teacher = vits.__dict__[args.arch](patch_size=args.patch_size)
         
-        if args.pretrained:
+        if args.use_pretrained:
             tmp = torch.hub.load('facebookresearch/dino:main', 'dino_vits16')
             print('loading pretrained weights in student')
             student.load_state_dict(
@@ -269,7 +269,7 @@ def train_dino(args):
     # ============ optionally resume training ... ============
     to_restore = {"epoch": 0}
     utils.restart_from_checkpoint(
-        os.path.join(args.output_dir, "checkpoint.pth"),
+        os.path.join(args.checkpoint_path, "checkpoint.pth"),
         run_variables=to_restore,
         student=student,
         teacher=teacher,
