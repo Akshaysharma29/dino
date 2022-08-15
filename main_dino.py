@@ -176,11 +176,11 @@ def train_dino(args):
             tmp = torch.hub.load('facebookresearch/dino:main', 'dino_vits16')
             print('loading pretrained weights in student')
             student.load_state_dict(
-                tmp.state_dict(),
+                tmp.state_dict(), strict=False,
             )
             print('loading pretrained weights in teacher')
             teacher.load_state_dict(
-                tmp.state_dict(),
+                tmp.state_dict(), strict=False,
             )
         
         embed_dim = student.embed_dim
