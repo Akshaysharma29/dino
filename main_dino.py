@@ -128,6 +128,7 @@ def get_args_parser():
     parser.add_argument("--local_rank", default=0, type=int, help="Please ignore and do not set this argument.")
     parser.add_argument("--use_pretrained", default=False, type=utils.bool_flag, help="this is only for vits to load from pretrained")
     parser.add_argument("--checkpoint_folder", default=".", type=str, help="this is only for vits load from checkpoint")
+    parser.add_argument("--num_classes", default=0, type=int, help="can be use to define custom head size.")
     return parser
 
 
@@ -165,8 +166,11 @@ def train_dino(args):
         student = vits.__dict__[args.arch](
             patch_size=args.patch_size,
             drop_path_rate=args.drop_path_rate,  # stochastic depth
+            num_classes=agrs.num_classes
         )
-        teacher = vits.__dict__[args.arch](patch_size=args.patch_size)
+        teacher = vits.__dict__[args.arch](patch_size=args.patch_size,
+                                           num_classes=agrs.num_classes
+                                          )
         
         if args.use_pretrained:
             tmp = torch.hub.load('facebookresearch/dino:main', 'dino_vits16')
