@@ -213,6 +213,7 @@ class VisionTransformer(nn.Module):
         for blk in self.blocks:
             x = blk(x)
         x = self.norm(x)
+        print(f'self.num_classes:{self.num_classes}')
         if self.num_classes==0:
             return x[:, 0]
         else:
