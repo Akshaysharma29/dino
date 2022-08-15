@@ -166,10 +166,10 @@ def train_dino(args):
         student = vits.__dict__[args.arch](
             patch_size=args.patch_size,
             drop_path_rate=args.drop_path_rate,  # stochastic depth
-            num_classes=agrs.num_classes
+            num_classes=args.num_classes
         )
         teacher = vits.__dict__[args.arch](patch_size=args.patch_size,
-                                           num_classes=agrs.num_classes
+                                           num_classes=args.num_classes
                                           )
         
         if args.use_pretrained:
